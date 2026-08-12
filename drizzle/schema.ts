@@ -19,14 +19,22 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Portfolio positions — the 23 assets of the main consolidated portfolio.
+ * Portfolio positions — supports Brazilian assets and global USD investments.
  */
 export const positions = mysqlTable("positions", {
   id: int("id").autoincrement().primaryKey(),
-  ticker: varchar("ticker", { length: 16 }).notNull().unique(),
+  ticker: varchar("ticker", { length: 32 }).notNull(),
   company: varchar("company", { length: 128 }).notNull(),
   sector: varchar("sector", { length: 128 }).notNull(),
   quantity: int("quantity").notNull(),
+  averageBuyPrice: decimal("averageBuyPrice", { precision: 12, scale: 4 }),
+  currency: mysqlEnum("currency", ["BRL", "USD"]).default("BRL").notNull(),
+  accountHolder: varchar("accountHolder", { length: 64 }).default("Consolidado").notNull(),
+  account: varchar("account", { length: 64 }).default("Consolidado").notNull(),
+  assetClass: varchar("assetClass", { length: 64 }).default("Ações").notNull(),
+  positionType: varchar("positionType", { length: 32 }).default("quoted_b3").notNull(),
+  sourceMarketValue: decimal("sourceMarketValue", { precision: 14, scale: 2 }),
+  sourceReturnPct: decimal("sourceReturnPct", { precision: 10, scale: 4 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -40,6 +48,7 @@ export type InsertPosition = typeof positions.$inferInsert;
 export const dailyHistory = mysqlTable("daily_history", {
   id: int("id").autoincrement().primaryKey(),
   date: varchar("date", { length: 10 }).notNull(),
+  portfolioScope: varchar("portfolioScope", { length: 32 }).default("legacy_b3").notNull(),
   totalValueBrl: decimal("totalValueBrl", { precision: 14, scale: 2 }).notNull(),
   previousValueBrl: decimal("previousValueBrl", { precision: 14, scale: 2 }),
   dailyResultBrl: decimal("dailyResultBrl", { precision: 14, scale: 2 }),

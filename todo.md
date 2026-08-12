@@ -34,3 +34,10 @@
 - [x] Garantir responsividade e acabamento visual
 - [x] Escrever testes vitest para procedures
 - [x] Validar funcionamento no navegador
+
+- [x] Importar e validar as planilhas atualizadas com ativos brasileiros e em dólar
+- [x] Definir campos de moeda, carteira de origem, preço médio e conversão cambial
+- [x] Atualizar banco e procedures para visão consolidada em BRL e USD
+- [x] Atualizar dashboard com posições internacionais e totais por moeda
+- [x] Criar testes e validar a atualização da carteira consolidada
+- [x] Separar o histórico diário legado do histórico da carteira unificada

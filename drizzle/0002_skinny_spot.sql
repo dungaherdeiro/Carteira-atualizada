@@ -1,0 +1,1 @@
+ALTER TABLE `positions` ADD `averageBuyPrice` decimal(12,4);

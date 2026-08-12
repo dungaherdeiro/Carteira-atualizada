@@ -1,0 +1,1 @@
+ALTER TABLE `daily_history` ADD `portfolioScope` varchar(32) DEFAULT 'legacy_b3' NOT NULL;

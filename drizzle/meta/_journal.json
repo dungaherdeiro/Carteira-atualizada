@@ -15,6 +15,34 @@
       "when": 1785966252950,
       "tag": "0001_lovely_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786055276092,
+      "tag": "0002_skinny_spot",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1786553883153,
+      "tag": "0003_windy_living_lightning",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1786554314270,
+      "tag": "0004_worried_leo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786555632153,
+      "tag": "0005_brave_zzzax",
+      "breakpoints": true
     }
   ]
 }

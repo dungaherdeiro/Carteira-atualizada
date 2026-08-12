@@ -29,6 +29,10 @@ import {
   Trophy,
   Info,
   Activity,
+  Globe2,
+  Layers3,
+  UsersRound,
+  Landmark,
 } from "lucide-react";
 import {
   Area,
@@ -53,6 +57,32 @@ function formatBrl(value: number | null | undefined): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+}
+
+function formatUsd(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function formatNative(value: number | null | undefined, currency: "BRL" | "USD"): string {
+  return currency === "USD" ? formatUsd(value) : formatBrl(value);
+}
+
+function positionTypeLabel(positionType: string): string {
+  const labels: Record<string, string> = {
+    quoted_b3: "B3",
+    aggregate_brl: "Agregado BRL",
+    aggregate_usd: "Agregado USD",
+    fund: "Fundo",
+    fii: "FII",
+    fixed_income: "Renda fixa",
+  };
+  return labels[positionType] ?? positionType;
 }
 
 function formatPct(value: number | null | undefined): string {
@@ -188,6 +218,10 @@ function DashboardContent() {
   const dailyResult = snapshotData?.dailyResult ?? 0;
   const dailyResultPct = snapshotData?.dailyResultPct ?? 0;
   const isGain = dailyResult >= 0;
+  const currencyTotals = snapshotData?.currencyTotals ?? [];
+  const accountConcentration = snapshotData?.accountConcentration ?? [];
+  const brlTotal = snapshotData?.totalValueNativeBrl ?? 0;
+  const usdTotal = snapshotData?.totalValueUsd ?? 0;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -203,7 +237,7 @@ function DashboardContent() {
                 Painel da Carteira Principal
               </h1>
               <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-                23 ativos · B3 · Cotações em tempo real via Yahoo Finance
+                {snapshotData?.positions.length ?? 0} posições · B3 + carteira global · Yahoo Finance
               </p>
             </div>
           </div>
@@ -229,7 +263,7 @@ function DashboardContent() {
       {/* ─── Main content ───────────────────────────────────────── */}
       <main className="flex-1 px-4 lg:px-8 py-6 space-y-5 max-w-[1440px] mx-auto w-full">
         {/* ─── Hero: Valor Total + Resultado do Dia ─────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Valor Total — card dominante */}
           <Card className="lg:col-span-2 bg-card border-border card-glow overflow-hidden">
             <CardContent className="pt-6 pb-6">
@@ -244,10 +278,10 @@ function DashboardContent() {
                   <div className="flex items-center gap-2 mb-3">
                     <Wallet className="h-4 w-4 text-primary" />
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Valor Consolidado
+                      Valor Consolidado em BRL
                     </span>
                   </div>
-                  <div className="text-5xl font-bold tracking-tight tabular-nums leading-none">
+                    <div className="text-5xl font-bold tracking-tight tabular-nums leading-none">
                     {formatBrl(totalValue)}
                   </div>
                   <div className="mt-4 flex items-center gap-4 text-sm">
@@ -268,6 +302,7 @@ function DashboardContent() {
 
           {/* Resultado do Dia */}
           <Card className="bg-card border-border card-elevated">
+
             <CardContent className="pt-6 pb-6">
               {isLoading ? (
                 <div className="space-y-3">
@@ -307,6 +342,73 @@ function DashboardContent() {
           </Card>
         </div>
 
+        {/* ─── Moedas, contas e câmbio ───────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 uppercase tracking-wider">
+                <Globe2 className="h-4 w-4 text-primary" />
+                Exposição por moeda
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+                  <span className="text-sm text-muted-foreground">Brasil · BRL</span>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono font-semibold tabular-nums">{formatBrl(brlTotal)}</div>
+                  <div className="text-[11px] text-muted-foreground tabular-nums">
+                    {(currencyTotals.find((item: any) => item.currency === "BRL")?.weight ?? 0).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+              <Separator className="bg-border" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-400" />
+                  <span className="text-sm text-muted-foreground">Global · USD</span>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono font-semibold tabular-nums">{formatUsd(usdTotal)}</div>
+                  <div className="text-[11px] text-muted-foreground tabular-nums">
+                    {formatBrl(snapshotData?.currencyTotals.find((item: any) => item.currency === "USD")?.brlValue)} · {(currencyTotals.find((item: any) => item.currency === "USD")?.weight ?? 0).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-md bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground flex items-center justify-between">
+                <span>USD/BRL de referência</span>
+                <span className="font-mono tabular-nums">{snapshotData?.usdBrlRate ? `R$ ${snapshotData.usdBrlRate.toFixed(4)}` : "indisponível"}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border lg:col-span-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 uppercase tracking-wider">
+                <UsersRound className="h-4 w-4 text-primary" />
+                Patrimônio por titular
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {accountConcentration.map((account: any) => (
+                  <div key={account.accountHolder} className="rounded-lg border border-border bg-muted/20 p-3">
+                    <div className="text-xs text-muted-foreground truncate" title={account.accountHolder}>{account.accountHolder}</div>
+                    <div className="mt-1 font-mono font-semibold tabular-nums">{formatBrl(account.value)}</div>
+                    <div className="mt-1 text-[11px] text-primary tabular-nums">{account.weight.toFixed(1)}% do consolidado</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-[11px] text-muted-foreground">
+                <Landmark className="h-3.5 w-3.5 text-primary" />
+                Totais em BRL; posições em USD convertidas pela taxa de referência exibida ao lado.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* ─── Gráfico de Evolução Histórica ────────────────────── */}
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
@@ -314,6 +416,7 @@ function DashboardContent() {
               <TrendingUp className="h-4 w-4 text-primary" />
               Evolução Histórica
             </CardTitle>
+            <p className="text-[11px] text-muted-foreground mt-1">A série histórica disponível antecede a unificação; o consolidado atual está em formação.</p>
           </CardHeader>
           <CardContent>
             {history.isLoading ? (
@@ -376,7 +479,7 @@ function DashboardContent() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold flex items-center gap-2 uppercase tracking-wider">
               <Wallet className="h-4 w-4 text-primary" />
-              Posições da Carteira
+              Posições da Carteira · {snapshotData?.positions.length ?? 0}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -392,38 +495,48 @@ function DashboardContent() {
                   <TableHeader>
                     <TableRow className="border-border hover:bg-transparent">
                       <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Ticker</TableHead>
-                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Empresa</TableHead>
+                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Empresa / conta</TableHead>
+                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Moeda / tipo</TableHead>
                       <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Qtd.</TableHead>
-                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Cotação</TableHead>
-                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Valor Mkt</TableHead>
+                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Cotação origem</TableHead>
+                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Valor BRL</TableHead>
                       <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Var. Dia</TableHead>
+                      <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Rentab. Acum.</TableHead>
                       <TableHead className="text-muted-foreground text-xs font-medium uppercase tracking-wider text-right">Peso</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(snapshotData?.positions ?? [])
-                      .sort((a, b) => (b.marketValue ?? 0) - (a.marketValue ?? 0))
-                      .map((pos) => {
+                      .sort((a: any, b: any) => (b.marketValue ?? 0) - (a.marketValue ?? 0))
+                      .map((pos: any) => {
                         const gain = (pos.dailyChangePct ?? 0) >= 0;
                         return (
                           <TableRow
-                            key={pos.ticker}
+                            key={`${pos.id}-${pos.account}-${pos.ticker}`}
                             className="border-border hover:bg-accent/20 transition-colors"
                           >
                             <TableCell className="font-mono font-semibold text-sm py-2.5">
                               {pos.ticker}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground py-2.5">
-                              {pos.company}
+                              <div className="text-foreground/90">{pos.company}</div>
+                              <div className="text-[10px] mt-0.5 truncate max-w-[180px]" title={pos.account}>{pos.account}</div>
+                            </TableCell>
+                            <TableCell className="py-2.5">
+                              <div className="flex items-center gap-1.5">
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border">{pos.currency}</Badge>
+                                <span className="text-[10px] text-muted-foreground">{positionTypeLabel(pos.positionType)}</span>
+                              </div>
                             </TableCell>
                             <TableCell className="text-right tabular-nums text-sm py-2.5">
                               {pos.quantity.toLocaleString("pt-BR")}
                             </TableCell>
                             <TableCell className="text-right tabular-nums text-sm py-2.5 font-mono">
-                              {formatBrl(pos.currentPrice)}
+                              {formatNative(pos.currentPrice, pos.currency)}
                             </TableCell>
                             <TableCell className="text-right tabular-nums text-sm py-2.5 font-medium">
-                              {formatBrl(pos.marketValue)}
+                              <div>{formatBrl(pos.marketValue)}</div>
+                              {pos.currency === "USD" && <div className="text-[10px] text-muted-foreground">{formatUsd(pos.nativeValue)}</div>}
                             </TableCell>
                             <TableCell
                               className={`text-right tabular-nums text-sm py-2.5 font-medium font-mono ${
@@ -431,6 +544,13 @@ function DashboardContent() {
                               }`}
                             >
                               {formatPct(pos.dailyChangePct)}
+                            </TableCell>
+                            <TableCell
+                              className={`text-right tabular-nums text-sm py-2.5 font-medium font-mono ${
+                                (pos.accumulatedReturnPct ?? 0) >= 0 ? "text-gain" : "text-loss"
+                              }`}
+                            >
+                              {formatPct(pos.accumulatedReturnPct)}
                             </TableCell>
                             <TableCell className="text-right tabular-nums text-sm py-2.5 text-muted-foreground">
                               {pos.weight !== null ? `${pos.weight.toFixed(1)}%` : "—"}
