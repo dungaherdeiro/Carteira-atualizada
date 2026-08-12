@@ -50,3 +50,11 @@
 - [x] Validar cálculos, fórmulas e entrega da planilha Excel
 - [x] Validar numericamente os totais BRL/USD, capital aplicado e rendimento contra a base consolidada
 - [x] Recalcular a planilha em ambiente compatível e confirmar os resumos e percentuais
+- [x] Incluir o saldo global da conta XP International de US$ 52,33, sem duplicar o PIMCO já registrado
+- [x] Regenerar e validar painel e planilha com o novo saldo global comprovado
+- [x] Validar no modo de prévia o saldo XP International de US$ 52,33 e os totais consolidados atualizados
+- [x] Adicionar cache curta ao snapshot de mercado para reduzir o carregamento inicial sem perder atualização frequente
+- [x] Confirmar visualmente no modo de prévia que a cache curta não causou regressão de carregamento
+- [x] Habilitar somente no modo de desenvolvimento a visualização do painel via parâmetro de prévia, preservando a autenticação em produção
+- [x] Confirmar que a URL publicada mantém a tela de login quando não há sessão autenticada
+- [x] Exibir estado de atualização no cabeçalho em vez de "0 posições" durante o carregamento das cotações

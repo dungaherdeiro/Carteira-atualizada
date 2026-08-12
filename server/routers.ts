@@ -63,6 +63,9 @@ interface SnapshotResult {
   timestamp: string;
 }
 
+const SNAPSHOT_CACHE_TTL_MS = 30_000;
+let snapshotCache: { value: SnapshotResult; expiresAt: number } | null = null;
+
 function emptyQuote(ticker: string): QuoteResult {
   return {
     ticker,
@@ -150,6 +153,9 @@ export const appRouter = router({
 
   portfolio: router({
     getSnapshot: publicProcedure.query(async () => {
+      if (snapshotCache && snapshotCache.expiresAt > Date.now()) {
+        return snapshotCache.value;
+      }
       const rawPositions = await getPositions();
       if (rawPositions.length === 0) {
         return {
@@ -269,12 +275,14 @@ export const appRouter = router({
       const previousTotalValue = dailyPerformance.previousTotal;
       const dailyResult = dailyPerformance.result;
       const dailyResultPct = dailyPerformance.resultPct;
-      return {
+      const snapshot = {
         positions, totalValue: totalValueBrl, totalValueBrl, totalValueUsd, totalValueNativeBrl,
         previousTotalValue, dailyResult, dailyResultPct, usdBrlRate,
         usdBrlRateStatus: rateStatus, topGainers, topLosers, sectorConcentration,
         accountConcentration, currencyTotals, timestamp: new Date().toISOString(),
       } satisfies SnapshotResult;
+      snapshotCache = { value: snapshot, expiresAt: Date.now() + SNAPSHOT_CACHE_TTL_MS };
+      return snapshot;
     }),
 
     getPositions: publicProcedure.query(async () => getPositions()),

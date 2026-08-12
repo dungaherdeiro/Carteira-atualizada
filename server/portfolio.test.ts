@@ -169,4 +169,30 @@ describe("Global aggregate position metadata", () => {
       sourceAsOfDate: "2026-08-12",
     });
   });
+
+  it("keeps the XP International cash balance without an assumed acquisition cost", async () => {
+    const xpCash = {
+      ticker: "GLOBAL_CASH",
+      company: "Saldo em conta investimento global — XP International",
+      accountHolder: "Alexandre Cesar",
+      account: "XP International",
+      currency: "USD",
+      sourceMarketValue: "52.33",
+      sourceInvestedValue: null,
+      sourceReturnValue: null,
+      sourceReturnPct: null,
+      sourceAsOfDate: "2026-08-12",
+    };
+    (getPositions as any).mockResolvedValue([xpCash]);
+
+    const result = await getPositions();
+    expect(result[0]).toMatchObject({
+      ticker: "GLOBAL_CASH",
+      accountHolder: "Alexandre Cesar",
+      account: "XP International",
+      currency: "USD",
+      sourceMarketValue: "52.33",
+      sourceInvestedValue: null,
+    });
+  });
 });

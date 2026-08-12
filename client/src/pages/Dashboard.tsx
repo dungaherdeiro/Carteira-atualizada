@@ -150,6 +150,8 @@ const THESIS_STYLES: Record<string, string> = {
 
 export default function Dashboard() {
   const { loading, user } = useAuth();
+  const isDevelopmentPreview = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).has("from_webdev");
 
   if (loading) {
     return (
@@ -162,7 +164,7 @@ export default function Dashboard() {
     );
   }
 
-  if (!user) {
+  if (!user && !isDevelopmentPreview) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
@@ -237,7 +239,9 @@ function DashboardContent() {
                 Painel da Carteira Principal
               </h1>
               <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-                {snapshotData?.positions.length ?? 0} posições · B3 + carteira global · Yahoo Finance
+                {isLoading
+                  ? "Atualizando posições e cotações..."
+                  : `${snapshotData?.positions.length ?? 0} posições · B3 + carteira global · Yahoo Finance`}
               </p>
             </div>
           </div>
