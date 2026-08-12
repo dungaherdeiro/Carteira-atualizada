@@ -41,6 +41,12 @@
 - [x] Atualizar dashboard com posições internacionais e totais por moeda
 - [x] Criar testes e validar a atualização da carteira consolidada
 - [x] Separar o histórico diário legado do histórico da carteira unificada
-- [ ] Corrigir chave duplicada na tabela consolidada quando o mesmo ticker aparece em mais de uma conta
-- [ ] Adicionar o capital aplicado de US$ 9.000,00 do PIMCO GIS Income (E) e seus dados de rendimento ao consolidado
-- [ ] Corrigir a chave React baseada apenas no ticker para permitir tickers repetidos em contas diferentes
+- [x] Corrigir chave duplicada na tabela consolidada quando o mesmo ticker aparece em mais de uma conta
+- [x] Adicionar o capital aplicado de US$ 9.000,00 do PIMCO GIS Income (E) e seus dados de rendimento ao consolidado
+- [x] Corrigir a chave React baseada apenas no ticker para permitir tickers repetidos em contas diferentes
+
+- [x] Consolidar posições, moedas e dados de custo para a planilha Excel dinâmica
+- [x] Criar planilha Excel com fórmulas, filtros e resumo da carteira
+- [x] Validar cálculos, fórmulas e entrega da planilha Excel
+- [x] Validar numericamente os totais BRL/USD, capital aplicado e rendimento contra a base consolidada
+- [x] Recalcular a planilha em ambiente compatível e confirmar os resumos e percentuais
