@@ -64,3 +64,4 @@
 - [x] Padronizar o gráfico consolidado no caminho definido pelo protocolo de resumo diário
 - [x] Referenciar no Markdown o nome efetivo do gráfico gerado pela rotina
 - [x] Conferir a primeira linha do histórico consolidado contra o resumo e o ponto do gráfico
+- [ ] Exportar a versão atual do painel para um repositório remoto do usuário
