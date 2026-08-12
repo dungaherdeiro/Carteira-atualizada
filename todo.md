@@ -58,3 +58,9 @@
 - [x] Habilitar somente no modo de desenvolvimento a visualização do painel via parâmetro de prévia, preservando a autenticação em produção
 - [x] Confirmar que a URL publicada mantém a tela de login quando não há sessão autenticada
 - [x] Exibir estado de atualização no cabeçalho em vez de "0 posições" durante o carregamento das cotações
+- [x] Executar o resumo diário da carteira consolidada com gráfico de evolução e alertas materiais
+- [x] Atualizar a rotina diária para usar a base consolidada e separar saldos sem cotação de resultados de mercado
+- [x] Validar o histórico e o gráfico diário após a primeira execução da base consolidada
+- [x] Padronizar o gráfico consolidado no caminho definido pelo protocolo de resumo diário
+- [x] Referenciar no Markdown o nome efetivo do gráfico gerado pela rotina
+- [x] Conferir a primeira linha do histórico consolidado contra o resumo e o ponto do gráfico
