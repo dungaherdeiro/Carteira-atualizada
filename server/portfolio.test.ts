@@ -144,3 +144,29 @@ describe("Yahoo Finance API Integration", () => {
     ).rejects.toThrow("API error");
   });
 });
+
+describe("Global aggregate position metadata", () => {
+  it("preserves invested value and return metadata for PIMCO", async () => {
+    const pimco = {
+      ticker: "PIMCO_GIS_INCOME_E",
+      company: "PIMCO GIS Income (E)",
+      currency: "USD",
+      sourceMarketValue: "9055.89",
+      sourceInvestedValue: "9000.00",
+      sourceReturnValue: "55.89",
+      sourceReturnPct: "0.62",
+      sourceAsOfDate: "2026-08-12",
+    };
+    (getPositions as any).mockResolvedValue([pimco]);
+
+    const result = await getPositions();
+    expect(result[0]).toMatchObject({
+      ticker: "PIMCO_GIS_INCOME_E",
+      currency: "USD",
+      sourceInvestedValue: "9000.00",
+      sourceReturnValue: "55.89",
+      sourceReturnPct: "0.62",
+      sourceAsOfDate: "2026-08-12",
+    });
+  });
+});

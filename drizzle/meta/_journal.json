@@ -43,6 +43,13 @@
       "when": 1786555632153,
       "tag": "0005_brave_zzzax",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786562032561,
+      "tag": "0006_modern_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

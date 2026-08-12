@@ -394,7 +394,7 @@ function DashboardContent() {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {accountConcentration.map((account: any) => (
-                  <div key={account.accountHolder} className="rounded-lg border border-border bg-muted/20 p-3">
+                  <div key={`${account.accountHolder}-${account.account ?? ""}-${account.currency ?? ""}`} className="rounded-lg border border-border bg-muted/20 p-3">
                     <div className="text-xs text-muted-foreground truncate" title={account.accountHolder}>{account.accountHolder}</div>
                     <div className="mt-1 font-mono font-semibold tabular-nums">{formatBrl(account.value)}</div>
                     <div className="mt-1 text-[11px] text-primary tabular-nums">{account.weight.toFixed(1)}% do consolidado</div>
@@ -521,6 +521,12 @@ function DashboardContent() {
                             <TableCell className="text-sm text-muted-foreground py-2.5">
                               <div className="text-foreground/90">{pos.company}</div>
                               <div className="text-[10px] mt-0.5 truncate max-w-[180px]" title={pos.account}>{pos.account}</div>
+                              {pos.sourceInvestedValue !== null && pos.sourceInvestedValue !== undefined && (
+                                <div className="text-[10px] mt-1 text-primary tabular-nums">
+                                  Aplicado {formatNative(pos.sourceInvestedValue, pos.currency)} · rendimento {formatNative(pos.sourceReturnValue, pos.currency)}
+                                  {pos.sourceAsOfDate ? ` · ${new Date(`${pos.sourceAsOfDate}T12:00:00`).toLocaleDateString("pt-BR")}` : ""}
+                                </div>
+                              )}
                             </TableCell>
                             <TableCell className="py-2.5">
                               <div className="flex items-center gap-1.5">
@@ -537,6 +543,11 @@ function DashboardContent() {
                             <TableCell className="text-right tabular-nums text-sm py-2.5 font-medium">
                               <div>{formatBrl(pos.marketValue)}</div>
                               {pos.currency === "USD" && <div className="text-[10px] text-muted-foreground">{formatUsd(pos.nativeValue)}</div>}
+                              {pos.sourceReturnPct !== null && pos.sourceReturnPct !== undefined && (
+                                <div className={`text-[10px] tabular-nums ${(pos.sourceReturnPct ?? 0) >= 0 ? "text-gain" : "text-loss"}`}>
+                                  {formatPct(pos.sourceReturnPct)} na origem
+                                </div>
+                              )}
                             </TableCell>
                             <TableCell
                               className={`text-right tabular-nums text-sm py-2.5 font-medium font-mono ${
@@ -589,7 +600,7 @@ function DashboardContent() {
                     <div className="space-y-1">
                       {(snapshotData?.topGainers ?? []).map((g, i) => (
                         <div
-                          key={g.ticker}
+                          key={`${g.ticker}-${g.company ?? ""}-${i}`}
                           className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-accent/20 transition-colors"
                         >
                           <div className="flex items-center gap-2.5">
@@ -618,7 +629,7 @@ function DashboardContent() {
                     <div className="space-y-1">
                       {(snapshotData?.topLosers ?? []).map((l, i) => (
                         <div
-                          key={l.ticker}
+                          key={`${l.ticker}-${l.company ?? ""}-${i}`}
                           className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-accent/20 transition-colors"
                         >
                           <div className="flex items-center gap-2.5">
@@ -699,7 +710,7 @@ function DashboardContent() {
                   </ChartContainer>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full text-xs">
                     {(snapshotData?.sectorConcentration ?? []).map((s, i) => (
-                      <div key={s.sector} className="flex items-center gap-2">
+                      <div key={`${s.sector}-${s.value ?? 0}`} className="flex items-center gap-2">
                         <div
                           className="h-2.5 w-2.5 rounded-sm shrink-0"
                           style={{ backgroundColor: SECTOR_COLORS[i % SECTOR_COLORS.length] }}

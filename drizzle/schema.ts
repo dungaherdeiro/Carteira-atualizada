@@ -34,7 +34,10 @@ export const positions = mysqlTable("positions", {
   assetClass: varchar("assetClass", { length: 64 }).default("Ações").notNull(),
   positionType: varchar("positionType", { length: 32 }).default("quoted_b3").notNull(),
   sourceMarketValue: decimal("sourceMarketValue", { precision: 14, scale: 2 }),
+  sourceInvestedValue: decimal("sourceInvestedValue", { precision: 14, scale: 2 }),
+  sourceReturnValue: decimal("sourceReturnValue", { precision: 14, scale: 2 }),
   sourceReturnPct: decimal("sourceReturnPct", { precision: 10, scale: 4 }),
+  sourceAsOfDate: varchar("sourceAsOfDate", { length: 10 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

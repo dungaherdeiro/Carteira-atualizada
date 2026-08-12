@@ -39,6 +39,9 @@ interface PositionWithQuote {
   accumulatedReturn: number | null;
   accumulatedReturnPct: number | null;
   sourceReturnPct: number | null;
+  sourceInvestedValue: number | null;
+  sourceReturnValue: number | null;
+  sourceAsOfDate: string | null;
 }
 
 interface SnapshotResult {
@@ -223,7 +226,11 @@ export const appRouter = router({
             account: pos.account, assetClass: pos.assetClass, positionType: pos.positionType,
             currentPrice, previousClose, nativeValue, marketValue, previousMarketValue,
             dailyChange, dailyChangePct, weight: null, averageBuyPrice, accumulatedReturn,
-            accumulatedReturnPct, sourceReturnPct: asNumber(pos.sourceReturnPct),
+            accumulatedReturnPct,
+            sourceReturnPct: asNumber(pos.sourceReturnPct),
+            sourceInvestedValue: asNumber(pos.sourceInvestedValue),
+            sourceReturnValue: asNumber(pos.sourceReturnValue),
+            sourceAsOfDate: pos.sourceAsOfDate ?? null,
           };
         });
 
